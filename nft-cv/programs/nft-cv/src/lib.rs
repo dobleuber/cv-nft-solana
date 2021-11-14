@@ -1,5 +1,4 @@
 use anchor_lang::prelude::*;
-use std::collections::HashMap;
 
 
 declare_id!("Fg6PaFpoGXkYsidMpWTK6W2BeZ7FEfcYkg476zPFsLnS");
@@ -7,33 +6,43 @@ declare_id!("Fg6PaFpoGXkYsidMpWTK6W2BeZ7FEfcYkg476zPFsLnS");
 #[program]
 pub mod nft_cv {
     use super::*;
-    pub fn create_cv(ctx: Context<CreateCV>) -> ProgramResult {
+    pub fn create_cv(ctx: Context<CreateCV>, init_data: CurriculumVitae) -> ProgramResult {
+        let cv = &mut ctx.accounts.cv;
+        cv.basic_profile = init_data.basic_profile;
+        cv.skills = init_data.skills;
         Ok(())
     }
 }
 
 #[derive(Accounts)]
-pub struct CreateCV {}
+pub struct CreateCV<'info> {
+    #[account(init, payer = user, space = 4096)]
+    pub cv: Account<'info, CurriculumVitae>,
+    #[account(mut)]
+    pub user: Signer<'info>,
+    pub system_program: Program<'info, System>,
+
+}
 
 #[derive(AnchorSerialize, AnchorDeserialize, Debug, Clone)]
 pub struct BasicProfile  {
-    first_name: String,
-    last_name: String,
-    headline: String,
-    summary: String,
-    phone: String,
-    email: String,
-    country: String,
+    pub first_name: String,
+    pub last_name: String,
+    pub headline: String,
+    pub summary: String,
+    pub phone: String,
+    pub email: String,
+    pub country: String,
 }
 
 #[derive(AnchorSerialize, AnchorDeserialize, Debug, Clone)]
 pub struct Position  {
-    company_name: String,
-    description: String,
-    location: String,
-    title: String,
-    start_date: String,
-    end_date: String,
+    pub company_name: String,
+    pub description: String,
+    pub location: String,
+    pub title: String,
+    pub start_date: String,
+    pub end_date: String,
 }
 
 #[derive(AnchorSerialize, AnchorDeserialize, Debug, Clone)]
@@ -58,21 +67,15 @@ pub enum LanguageLevel {
 
 #[derive(AnchorSerialize, AnchorDeserialize, Debug, Clone)]
 pub struct Language {
-    language: String,
-    level: LanguageLevel,
-}
-
-#[derive(AnchorSerialize, AnchorDeserialize, Debug, Clone)]
-pub struct CurriculumVitae {
-    basic_profile: BasicProfile,
-    positions: Vec<Position>,
-    education: Vec<Education>,
-    languages: Vec<Language>,
-    skills: Vec<String>,
+    pub language: String,
+    pub level: LanguageLevel,
 }
 
 #[account]
-pub struct CVList {
-    user_list: Vec<Pubkey>,
-    cv_list: Vec<CurriculumVitae>,
+pub struct CurriculumVitae {
+    pub basic_profile: BasicProfile,
+    // pub positions: Vec<Position>,
+    // pub education: Vec<Education>,
+    // pub languages: Vec<Language>,
+    pub skills: Vec<String>,
 }
