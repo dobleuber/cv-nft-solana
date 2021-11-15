@@ -6,10 +6,22 @@ declare_id!("Fg6PaFpoGXkYsidMpWTK6W2BeZ7FEfcYkg476zPFsLnS");
 #[program]
 pub mod nft_cv {
     use super::*;
-    pub fn create_cv(ctx: Context<CreateCV>, init_data: CurriculumVitae) -> ProgramResult {
+    pub fn create_cv(ctx: Context<CreateCV>, init_data: CurriculumVitae, owner: Pubkey) -> ProgramResult {
         let cv = &mut ctx.accounts.cv;
+        cv.owner = owner;
         cv.basic_profile = init_data.basic_profile;
         cv.skills = init_data.skills;
+        cv.positions = init_data.positions;
+        cv.education = init_data.education;
+        Ok(())
+    }
+
+    pub fn update_cv(ctx: Context<UpdateCV>, new_data: CurriculumVitae) -> ProgramResult {
+        let cv = &mut ctx.accounts.cv;
+        cv.basic_profile = new_data.basic_profile;
+        cv.skills = new_data.skills;
+        cv.positions = new_data.positions;
+        cv.education = new_data.education;
         Ok(())
     }
 }
@@ -21,7 +33,13 @@ pub struct CreateCV<'info> {
     #[account(mut)]
     pub user: Signer<'info>,
     pub system_program: Program<'info, System>,
+}
 
+#[derive(Accounts)]
+pub struct UpdateCV<'info> {
+    #[account(mut, has_one = owner)]
+    pub cv: Account<'info, CurriculumVitae>,
+    pub owner: Signer<'info>,
 }
 
 #[derive(AnchorSerialize, AnchorDeserialize, Debug, Clone)]
@@ -73,9 +91,10 @@ pub struct Language {
 
 #[account]
 pub struct CurriculumVitae {
+    pub owner: Pubkey,
     pub basic_profile: BasicProfile,
-    // pub positions: Vec<Position>,
-    // pub education: Vec<Education>,
+    pub positions: Vec<Position>,
+    pub education: Vec<Education>,
     // pub languages: Vec<Language>,
     pub skills: Vec<String>,
 }
