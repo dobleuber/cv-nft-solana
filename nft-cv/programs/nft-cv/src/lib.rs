@@ -12,6 +12,7 @@ pub mod nft_cv {
         cv.basic_profile = init_data.basic_profile;
         cv.skills = init_data.skills;
         cv.positions = init_data.positions;
+        cv.languages = init_data.languages;
         cv.education = init_data.education;
         Ok(())
     }
@@ -21,6 +22,7 @@ pub mod nft_cv {
         cv.basic_profile = new_data.basic_profile;
         cv.skills = new_data.skills;
         cv.positions = new_data.positions;
+        cv.languages = new_data.languages;
         cv.education = new_data.education;
         Ok(())
     }
@@ -95,6 +97,6 @@ pub struct CurriculumVitae {
     pub basic_profile: BasicProfile,
     pub positions: Vec<Position>,
     pub education: Vec<Education>,
-    // pub languages: Vec<Language>,
+    pub languages: Vec<Language>,
     pub skills: Vec<String>,
 }

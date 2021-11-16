@@ -48,10 +48,12 @@ describe('nft-cv', async () => {
     }
   ];
 
-  // const languages = [{
-  //   language: 'English',
-  //   level: 'LanguageLevel.Elementary',
-  // }]
+  const languages = [{
+    language: 'English',
+    level: {
+      elementary: {}
+    },
+  }]
   const skills = [
     'react',
     'typescript',
@@ -64,6 +66,7 @@ describe('nft-cv', async () => {
     basicProfile,
     education,
     positions,
+    languages,
     skills,
   };
 
@@ -127,10 +130,21 @@ describe('nft-cv', async () => {
       }
     ];
 
+    const newLanguages = [
+      ...languages,
+      {
+        language: 'Spanish',
+        level: {
+          nativeOrBilingual: {},
+        }
+      }
+    ]
+
     const newCv = {
       ...cv,
       basicProfile: newBasicProfile,
       positions: newPositions,
+      languages: newLanguages,
     };
 
     await program.rpc.updateCv(newCv, {
@@ -147,6 +161,8 @@ describe('nft-cv', async () => {
       curriculumVitae.basicProfile,
       newBasicProfile
     );
+
+    assert.deepEqual(curriculumVitae.languages, newLanguages);
 
     assert.deepEqual(curriculumVitae.positions, newPositions);
   });
